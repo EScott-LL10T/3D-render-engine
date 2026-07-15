@@ -17,7 +17,7 @@ public class Matrix3 {
         return new Matrix3(result);
     }
 
-    Vertex transfrom(Vertex in){
+    Vertex transform(Vertex in){
         return new Vertex(
                 in.x * values[0] + in.y * values[3] + in.z * values[6],
                 in.x * values[1] + in.y * values[4] + in.z * values[7],
