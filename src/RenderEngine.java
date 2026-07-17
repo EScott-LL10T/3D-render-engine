@@ -14,6 +14,11 @@ public class RenderEngine {
         Container pane = frame.getContentPane();
         pane.setLayout(new BorderLayout());
 
+        // to switch between sphere and tetrahedron
+        String[] shapes = {"Tetrahedron", "Sphere"};
+        JComboBox<String> shapeSelector = new JComboBox<>(shapes);
+        pane.add(shapeSelector, BorderLayout.NORTH);
+
         // slider to control horizontal rotation
         JSlider headingSlider = new JSlider(-180, 180, 0);
         pane.add(headingSlider, BorderLayout.SOUTH);
@@ -32,26 +37,15 @@ public class RenderEngine {
                 g2.setColor(Color.BLACK);
                 g2.fillRect(0, 0, getWidth(), getHeight());
 
-                List<Triangle> tris = new ArrayList<>();
-                tris.add(new Triangle(new Vertex(100, 100, 100),
-                        new Vertex(-100, -100, 100),
-                        new Vertex(-100, 100, -100),
-                        Color.WHITE));
-                tris.add(new Triangle(new Vertex(100, 100, 100),
-                        new Vertex(-100, -100, 100),
-                        new Vertex(100, -100, -100),
-                        Color.RED));
-                tris.add(new Triangle(new Vertex(-100, 100, -100),
-                        new Vertex(100, -100, -100),
-                        new Vertex(100, 100, 100),
-                        Color.GREEN));
-                tris.add(new Triangle(new Vertex(-100, 100, -100),
-                        new Vertex(100, -100, -100),
-                        new Vertex(-100, -100, 100),
-                        Color.BLUE));
+                List<Triangle> tris = createTetrahedron();
+                List<Triangle> sphere = tris;
 
                 for(int i = 0; i < 4; i++){
-                    tris = inflate(tris);
+                     sphere = inflate(sphere);
+                }
+
+                if(shapeSelector.getSelectedItem() != null && shapeSelector.getSelectedItem().equals("Sphere")){
+                    tris = sphere;
                 }
 
                 // rotation XZ direction (left-right)
@@ -159,6 +153,7 @@ public class RenderEngine {
 
         headingSlider.addChangeListener(e -> renderPanel.repaint());
         pitchSlider.addChangeListener(e -> renderPanel.repaint());
+        shapeSelector.addActionListener(e -> renderPanel.repaint());
 
 
     }
@@ -201,6 +196,27 @@ public class RenderEngine {
             }
         }
         return result;
+    }
+
+    public static List<Triangle> createTetrahedron(){
+        List<Triangle> tris = new ArrayList<>();
+        tris.add(new Triangle(new Vertex(100, 100, 100),
+                new Vertex(-100, -100, 100),
+                new Vertex(-100, 100, -100),
+                Color.WHITE));
+        tris.add(new Triangle(new Vertex(100, 100, 100),
+                new Vertex(-100, -100, 100),
+                new Vertex(100, -100, -100),
+                Color.RED));
+        tris.add(new Triangle(new Vertex(-100, 100, -100),
+                new Vertex(100, -100, -100),
+                new Vertex(100, 100, 100),
+                Color.GREEN));
+        tris.add(new Triangle(new Vertex(-100, 100, -100),
+                new Vertex(100, -100, -100),
+                new Vertex(-100, -100, 100),
+                Color.BLUE));
+        return tris;
     }
 
 
