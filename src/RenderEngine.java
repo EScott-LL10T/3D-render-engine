@@ -83,12 +83,28 @@ public class RenderEngine {
                         Vertex v2 = transform.transform(t.v2);
                         Vertex v3 = transform.transform(t.v3);
 
+
                         v1.x += (double) getWidth() / 2;
                         v1.y += (double) getHeight() / 2;
                         v2.x += (double) getWidth() / 2;
                         v2.y += (double) getHeight() / 2;
                         v3.x += (double) getWidth() / 2;
                         v3.y += (double) getHeight() / 2;
+
+                        Vertex ab = new Vertex(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
+                        Vertex ac = new Vertex(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);
+
+                        Vertex norm = new Vertex(
+                                ab.y * ac.z - ab.z * ac.y,
+                                ab.z * ac.x - ab.x * ac.z,
+                                ab.x * ac.y - ab.y * ac.x
+                        );
+                        double normalLength = Math.sqrt(norm.x * norm.x + norm.y * norm.y + norm.z * norm.z);
+                        norm.x /= normalLength;
+                        norm.y /= normalLength;
+                        norm.z /= normalLength;
+
+                        double angleCos = Math.abs(norm.z);
 
                         int minX = (int) Math.max(0, Math.ceil(Math.min(v1.x, Math.min(v2.x, v3.x))));
                         int maxX = (int) Math.min(img.getHeight() - 1,
@@ -110,7 +126,7 @@ public class RenderEngine {
                                     double depth = b1 * v1.z + b2 * v2.z + b3 * v3.z;
                                     int zIndex = y * img.getWidth() + x;
                                     if(zBuffer[zIndex] < depth) {
-                                        img.setRGB(x, y, t.color.getRGB());
+                                        img.setRGB(x, y, getShade(t.color, angleCos).getRGB());
                                         zBuffer[zIndex] = depth;
 
                                     }
@@ -141,6 +157,15 @@ public class RenderEngine {
         pitchSlider.addChangeListener(e -> renderPanel.repaint());
 
 
+    }
+
+
+    public static Color getShade(Color color, double shade){
+
+        int red = (int) (color.getRed() * shade);
+        int  green = (int) (color.getGreen() * shade);
+        int blue = (int) (color.getBlue() * shade);
+        return new Color(red, green, blue);
     }
 
 
